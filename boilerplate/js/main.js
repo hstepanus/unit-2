@@ -1,5 +1,5 @@
 /* Map of GeoJSON data from MegaCities.geojson */
-//declare map var in global scope
+//declare map var in global scope s
 var map;
 //function to instantiate the Leaflet map
 function createMap(){
