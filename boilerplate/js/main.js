@@ -1,4 +1,5 @@
-// Add all scripts to the JS folder
+/* Map of GeoJSON data from MegaCities.geojson */
+//declare map var in global scope
 var map;
 //function to instantiate the Leaflet map
 function createMap(){
@@ -8,26 +9,32 @@ function createMap(){
         zoom: 2
     });
 
-var OpenStreetMap_Mapnik = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-	maxZoom: 19,
-	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-});
-L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-  
+    //add OSM base tilelayer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+    }).addTo(map);
 
-//call getData function
-   getData();
+    //call getData function
+    getData();
 };
 
 //function to retrieve the data and place it on the map
 function getData(){
     //load the data
-    fetch("data/Eastcoast_cities.geojson")
+    fetch("data/MegaCities.geojson")
         .then(function(response){
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
             return response.json();
         })
         .then(function(json){
             //create a Leaflet GeoJSON layer and add it to the map
             L.geoJson(json).addTo(map);
         })
+        .catch(function(error){
+            console.error('Error fetching GeoJSON data:', error);
+        });
 };
+
+document.addEventListener('DOMContentLoaded', createMap);
