@@ -40,7 +40,7 @@ function pointToLayer(feature, latlng, attributes) {
 function calculateMinValue(data) {
     var allValues = [];
     for (var city of data.features) {
-        for (var year = 1960; year <= 2020; year += 10) {
+        for (var year = 1985; year <= 2015; year += 5) {
             var value = city.properties["Pop_" + String(year)];
             allValues.push(value);
         }
@@ -131,7 +131,7 @@ function processData(data) {
 
 // Function to load GeoJSON data
 function getData() {
-    fetch("data/Eastcoast_cities.geojson")
+    fetch("data/MegaCities.geojson")
         .then(function(response) {
             return response.json();
         })
