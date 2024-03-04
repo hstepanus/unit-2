@@ -1,41 +1,81 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width">
-            <title></title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Leaflet Map with Compass</title>
 
-        <!--put your external stylesheet links here-->
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossorigin=""/>
-        <link rel="stylesheet" href="css/style.css"/>
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossorigin=""></script>
-        <style>
-            #map { height: 500px; }
-        </style>
-        <!--[if IE<9]>
-            <link rel="stylesheet" href="css/style.ie.css">
-        <![endif]-->
+    <!-- Put your external stylesheet links here -->
+    <link rel="stylesheet" href="lib/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <link rel="stylesheet" href="lib/leaflet-compass.css" />
 
-         <!--you can also place internal styles here;
-             place these within <style> tags-->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-easyprint/2.9.0/easyprint.js"></script>
-    </head>
+    <!-- Include Leaflet JS -->
+    <script src="lib/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
 
-    <body>
-        <div id="map"></div>
-        <div id="panel"></div>
-        <!--put your initial page content here-->
+    <!-- Include Leaflet Compass JS -->
+    <script src="lib/leaflet-compass.min.js"></script>
+    <script src="lib/package.js"></script>
+    <style>
+      
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="panel"></div>
+<!-- Put your initial page content here -->
 
-        <!--you can also use this space for internal scripts;
-        place these within <script> tags-->
-        <!--put your external script links here-->
-        <script type="text/javascript" src="lib/leaflet.js"></script>
-        <script type="text/javascript" src="js/main_lab1.js"></script>
-        
-    </body>
+<!-- You can also use this space for internal scripts; place these within <script> tags -->
+<!-- Put your external script links here -->
+<script type="text/javascript" src="lib/leaflet.js"></script>
+<script type="text/javascript" src="js/trial_lab1.js"></script>
+
+<script>
+    // Declare map variable globally so all functions have access
+    var map;
+    var dataStats = {}; // Add dataStats variable
+
+    // Function to create the map
+    function createMap() {
+        // Create the map
+        map = L.map('map', {
+            center: [10, -20],
+            zoom: 2
+        });
+
+        // Add OSM base tilelayer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+        }).addTo(map);
+
+        // Add Compass control to the map
+        L.control.compass().addTo(map);
+
+        // Call getData function
+        getData();
+    }
+
+    // Function to load GeoJSON data
+    function getData() {
+        fetch("data/police_per_100000pop.geojson")
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(json) {
+                calculateMinValue(json);
+                createPropSymbols(json);
+                calcStats(json); // Move calcStats call here
+                createLegend(processData(json)); // Call createLegend function here with updated attributes
+            });
+    }
+
+    // Rest of your existing JavaScript code...
+</script>
+</body>
 </html>
-

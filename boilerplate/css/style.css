@@ -20,7 +20,7 @@ body {
 }
 
 .range-slider {
-    width: 55%;
+    width: 58%;
 }
 
 .step {
@@ -28,7 +28,7 @@ body {
 }
 
 .step img {
-    width: 100%;
+    width: 10%;
 }
 
 #forward {
