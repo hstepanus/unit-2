@@ -1,16 +1,18 @@
+
 // Add a title above the map container
 var mapTitle = document.createElement('h1');
 mapTitle.innerHTML = 'Police Forces Per 100000 Population-Eastern side of the United States';
 document.body.insertBefore(mapTitle, document.getElementById('map'));
 
+
 // Add additional text to help tell the story
 var mapStory = document.createElement('div');
-mapStory.innerHTML = '<p>This map illustrates police forces per 100000 population in every state, with the sizes of cities representing the police count for each state in the eastern side of the United States. With this data, we can observe disparities in police distribution among states. Washington DC is the only one shown to have sufficient police forces relative to its population.</p>';
+mapStory.innerHTML = '<p>This map illustrates police forces per 100000 population in every states, the cities dotted sizes are reprensented for each states in the eastern side of the United States.With this data, we can see many states are lack in police compared to each others.Washington DC is the only one that has sufficient police forces to the population.</p>';
 document.body.appendChild(mapStory);
 
 // Add a section below the map to cite data sources
 var dataSources = document.createElement('div');
-dataSources.innerHTML = '<p>Data Sources: Police forces data from the US Bureau Database.</p>';
+dataSources.innerHTML = '<p>Data Sources: Police forces data from the US bureau Database.</p>';
 document.body.appendChild(dataSources);
 
 // Declare map variable globally so all functions have access
@@ -33,15 +35,6 @@ function createMap() {
 
     // Call getData function
     getData();
-
-    // Move the L.easyPrint control addition after the map creation
-    map.on('load', function() {
-        L.easyPrint({
-            title: 'My awesome print button',
-            position: 'bottomright',
-            sizeModes: ['A4Portrait', 'A4Landscape']
-        }).addTo(map);
-    });
 }
 
 // Function to convert markers to circle markers
@@ -102,8 +95,8 @@ function createSequenceControls(attributes) {
     document.querySelector(".range-slider").value = 0;
     document.querySelector(".range-slider").step = 1;
 
-    document.querySelector('#panel').insertAdjacentHTML('beforeend', '<button class="step" id="reverse"></button>');
-    document.querySelector('#panel').insertAdjacentHTML('beforeend', '<button class="step" id="forward"></button>');
+    document.querySelector('#panel').insertAdjacentHTML('beforeend', '<button class="step" id="reverse">Reverse</button>');
+    document.querySelector('#panel').insertAdjacentHTML('beforeend', '<button class="step" id="forward">Forward</button>');
 
     document.querySelector('#reverse').insertAdjacentHTML('beforeend', "<img src='img/reverse.jpg' width='20px'>");
     document.querySelector('#forward').insertAdjacentHTML('beforeend', "<img src='img/forward.jpg' width='20px'>");
@@ -166,11 +159,54 @@ function getData() {
             createLegend(processData(json)); // Call createLegend function here with updated attributes
         });
 }
-
 // Function to create the legend
 function createLegend(attributes) {
-    // Function body here
+    var LegendControl = L.Control.extend({
+        options: {
+            position: 'bottomright'
+        },
+
+        onAdd: function () {
+            // Create the control container with a particular class name
+            var container = L.DomUtil.create('div', 'legend-control-container');
+
+            // Initialize the legend HTML content
+            container.innerHTML = '<p class="temporalLegend">Police per 100000 population in <span class="year">2011</span></p>';
+
+            // Step 1: Start attribute legend svg string
+            var svg = '<svg id="attribute-legend" width="130px" height="130px">';
+
+            // Step 2: Loop through each circle name (min, max, mean) to create circles and text elements
+            var circles = ["max", "mean", "min"];
+            for (var i = 0; i < circles.length; i++) {
+                // Step 3: Calculate the radius and position of each circle based on the dataset min, max, and mean values
+                var radius = calcPropRadius(dataStats[circles[i]]);
+                var cy = 130 - radius;
+
+                // Step 4: Assign each circle element a center and radius based on the calculated values
+                svg += '<circle class="legend-circle" id="' + circles[i] + '" r="' + radius + '" cy="' + cy + '" fill="#F47821" fill-opacity="0.8" stroke="#000000" cx="65"/>';
+
+                // Step 5: Add text labels for each circle
+                var textY = i * 20 + 20;
+                svg += '<text id="' + circles[i] + '-text" x="65" y="' + textY + '">' + Math.round(dataStats[circles[i]] * 100) / 100 + " polices" + '</text>';
+            }
+
+            // Close svg string
+            svg += "</svg>";
+
+            // Add attribute legend svg to container
+            container.innerHTML += svg;
+
+            return container;
+        }
+    });
+
+    // Add legend control to map
+    map.addControl(new LegendControl());
 }
+//rotating map compass
+
+
 
 // Call createMap function when the DOM content is loaded
 document.addEventListener('DOMContentLoaded', createMap);
