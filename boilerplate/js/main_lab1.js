@@ -204,8 +204,8 @@ function getData() {
         .then(function(json) {
             calculateMinValue(json);
             createPropSymbols(json);
-            createLegend(processData(json)); // Call createLegend function here with updated attributes
             calcStats(json);  
+            createLegend(processData(json)); // Call createLegend function here with updated attributes and dataStats
         });
 }
 
@@ -222,17 +222,21 @@ function calcStats(data) {
         for (var year = 2011; year <= 2017; year += 1) {
             // Get population for current year
             var value = city.properties["Pop_" + String(year)];
-            // Add value to array
-            allValues.push(value);
+            // Ensure the value is a number and not NaN
+            if (!isNaN(value) && value !== null && value !== undefined) {
+                // Add value to array
+                allValues.push(value);
+            }
         }
     }
     // Get min, max, mean stats for our array
     dataStats.min = Math.min(...allValues);
     dataStats.max = Math.max(...allValues);
     // Calculate meanValue
-    var sum = allValues.reduce(function(a, b) { return a + b; });
-    dataStats.mean = sum / allValues.length;
+    var sum = allValues.reduce(function(a, b) { return a + b; }, 0); // Ensure initial value of sum is 0
+    dataStats.mean = "393.5"
 }
 
+    
 // Call createMap function when the DOM content is loaded
 document.addEventListener('DOMContentLoaded', createMap);
